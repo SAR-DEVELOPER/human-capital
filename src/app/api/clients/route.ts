@@ -1,0 +1,81 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+/**
+ * API Route: /api/clients
+ * 
+ * Proxies client requests (GET all, POST create) to the backend API to avoid CORS issues.
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.centri.id';
+    const cookies = request.cookies.toString();
+    
+    const response = await fetch(`${apiUrl}/clients`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...(cookies && { 'Cookie': cookies }),
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: errorText || 'Failed to fetch clients' };
+      }
+      return NextResponse.json(errorData, { status: response.status });
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    console.error('Error proxying get clients request:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.centri.id';
+    const body = await request.json();
+    const cookies = request.cookies.toString();
+    
+    const response = await fetch(`${apiUrl}/clients`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...(cookies && { 'Cookie': cookies }),
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: errorText || 'Failed to create client' };
+      }
+      return NextResponse.json(errorData, { status: response.status });
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    console.error('Error proxying create client request:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
