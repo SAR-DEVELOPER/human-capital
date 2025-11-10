@@ -12,17 +12,17 @@ export async function GET(
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.centri.id';
     const { id } = await params;
-    
+
     if (!id) {
       return NextResponse.json(
         { error: 'ID parameter is required' },
         { status: 400 }
       );
     }
-    
+
     // Get all cookies from the request
     const cookies = request.cookies.toString();
-    
+
     // Forward the request to the backend API
     const response = await fetch(`${apiUrl}/identities/${id}`, {
       method: 'GET',

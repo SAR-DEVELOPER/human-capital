@@ -12,3 +12,4 @@ declare module 'docxtemplater-image-module-free' {
   export default ImageModule;
 }
 
+

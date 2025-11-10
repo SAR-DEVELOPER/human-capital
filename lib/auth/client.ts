@@ -60,7 +60,7 @@ export function getCurrentUser(): User | null {
   }
 
   const decoded = decodeJWT(token);
-  
+
   // If decoded token doesn't have required 'sub' field, return null
   if (!decoded || !decoded.sub) {
     return null;

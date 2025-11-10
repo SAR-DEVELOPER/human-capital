@@ -12,16 +12,16 @@ export async function GET(
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.centri.id';
     const { id } = await params;
-    
+
     if (!id) {
       return NextResponse.json(
         { error: 'ID parameter is required' },
         { status: 400 }
       );
     }
-    
+
     const cookies = request.cookies.toString();
-    
+
     const response = await fetch(`${apiUrl}/clients/${id}`, {
       method: 'GET',
       headers: {
@@ -62,14 +62,14 @@ export async function PUT(
     const { id } = await params;
     const body = await request.json();
     const cookies = request.cookies.toString();
-    
+
     if (!id) {
       return NextResponse.json(
         { error: 'ID parameter is required' },
         { status: 400 }
       );
     }
-    
+
     const response = await fetch(`${apiUrl}/clients/${id}`, {
       method: 'PUT',
       headers: {
@@ -110,14 +110,14 @@ export async function DELETE(
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.centri.id';
     const { id } = await params;
     const cookies = request.cookies.toString();
-    
+
     if (!id) {
       return NextResponse.json(
         { error: 'ID parameter is required' },
         { status: 400 }
       );
     }
-    
+
     const response = await fetch(`${apiUrl}/clients/${id}`, {
       method: 'DELETE',
       headers: {
