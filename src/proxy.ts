@@ -47,7 +47,7 @@ export function proxy(request: NextRequest) {
 
     // Construct the callback URL using the production domain instead of request.url
     // This ensures we use hc.centri.id instead of localhost:3900
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://hc.centri.id';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://hc-sar.centri.id';
     const callbackUrl = `${appUrl}${request.nextUrl.pathname}${request.nextUrl.search}`;
 
     // Store the attempted URL to redirect back after login

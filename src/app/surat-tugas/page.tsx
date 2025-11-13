@@ -1683,7 +1683,7 @@ function SuratTugasPageContent() {
                     }}
                 >
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link href="/" style={{ textDecoration: "none" }}>
+                        <Link href="https://web.centri.id/dashboard/landing" style={{ textDecoration: "none" }}>
                             <MuiLink
                                 sx={{ display: "flex", alignItems: "center" }}
                                 color="inherit"
@@ -1694,12 +1694,12 @@ function SuratTugasPageContent() {
                                 Dashboard
                             </MuiLink>
                         </Link>
-                        <Link href="/division" style={{ textDecoration: "none" }}>
+                        <Link href="https://web.centri.id/dashboard/landing" style={{ textDecoration: "none" }}>
                             <MuiLink color="inherit" underline="hover" component="span">
                                 Divisions
                             </MuiLink>
                         </Link>
-                        <Link href="/division/human-capital" style={{ textDecoration: "none" }}>
+                        <Link href="/" style={{ textDecoration: "none" }}>
                             <MuiLink color="inherit" underline="hover" component="span">
                                 Human Capital
                             </MuiLink>
