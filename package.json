@@ -19,7 +19,7 @@
     "docxtemplater-image-module-free": "^1.1.1",
     "file-saver": "^2.0.5",
     "framer-motion": "^11.0.0",
-    "next": "16.0.1",
+    "next": "16.0.10",
     "pizzip": "^3.2.0",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
