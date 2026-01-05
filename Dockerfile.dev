@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package.json package-lock.json ./
+
+# Install dependencies
+RUN npm install
+
+# Expose the port the app will run on
+EXPOSE 3900
+
+# Set the command to start the app in development mode
+CMD ["npm", "run", "dev"]
+

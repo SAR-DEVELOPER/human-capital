@@ -1,11 +1,46 @@
 services:
   human-capital:
-    image: human-capital
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: human-capital-service
     ports:
       - "3900:3900"
     volumes:
+      # Mount the source code for hot reloading (only in development)
       - ./:/app
+      # Prevent node_modules from being overwritten by the mount (only in development)
+      - /app/node_modules
+    restart: always
     environment:
       - NODE_ENV=development
       - PORT=3900
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3900" ]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    profiles:
+      - dev
+
+  human-capital-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: human-capital-service
+    ports:
+      - "3900:3900"
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3900
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3900" ]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    profiles:
+      - prod
 
