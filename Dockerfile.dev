@@ -17,3 +17,4 @@ EXPOSE 3900
 # Set the command to start the app in development mode
 CMD ["npm", "run", "dev"]
 
+
