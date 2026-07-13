@@ -7,9 +7,11 @@ import type {
     SuratTugasFormData,
     SuratTugasTemplateData,
     SuratTugasGenerationOptions,
+    SuratTugasProject,
     PetugasData,
     TeamMember,
 } from '../types/suratTugas';
+import type { Client } from '../api/types/client';
 
 /**
  * Convert base64 data URL to Uint8Array (browser-compatible)
@@ -508,5 +510,78 @@ export async function generateSuratTugasFromForm(
         }
         throw new Error('Failed to generate Surat Tugas DOCX: Unknown error');
     }
+}
+
+/**
+ * Extract the original 3-digit sequential number from a stored Surat Tugas record.
+ */
+export function extractDocumentNumber(item: SuratTugasProject): string {
+    if (item.masterDocumentList.indexNumber != null) {
+        return String(item.masterDocumentList.indexNumber).padStart(3, '0');
+    }
+    const firstSegment = item.masterDocumentList.documentNumber.split('/')[0];
+    return firstSegment?.padStart(3, '0') || '001';
+}
+
+/**
+ * Map a persisted Surat Tugas record back to form data for DOCX regeneration.
+ */
+export function mapSuratTugasProjectToFormData(item: SuratTugasProject): SuratTugasFormData {
+    const mapPersonnelToTeamMember = (
+        personnel: NonNullable<SuratTugasProject['timPenugasan']>[number]['personnel'],
+        assignmentRole?: string,
+    ): TeamMember => ({
+        id: personnel.id,
+        name: personnel.name,
+        email: personnel.email,
+        username: personnel.preferredUsername,
+        role: personnel.role,
+        jobTitle: personnel.jobTitle,
+        assignmentRole: assignmentRole || personnel.jobTitle || personnel.role,
+    });
+
+    return {
+        jenis: item.type,
+        judul: item.namaPekerjaan,
+        deskripsi: item.deskripsiPekerjaan,
+        petugas: (item.timPenugasan ?? []).map((assignment) =>
+            mapPersonnelToTeamMember(assignment.personnel, assignment.role),
+        ),
+        penandatangan: mapPersonnelToTeamMember(item.signer),
+        tanggal_surat: new Date(item.tanggalSuratTugas),
+        tanggal_mulai: new Date(item.tanggalMulai),
+        tanggal_selesai: new Date(item.tanggalSelesai),
+        lokasi: item.lokasi,
+        klien: item.client as unknown as Client,
+        catatan: '',
+        prioritas: 'medium',
+    };
+}
+
+function sanitizeFilename(documentNumber: string): string {
+    return `Surat_Tugas_${documentNumber.replace(/[/\\?%*:|"<>]/g, '_')}.docx`;
+}
+
+/**
+ * Regenerate and download a Surat Tugas DOCX from stored record metadata.
+ */
+export async function regenerateAndDownloadSuratTugas(item: SuratTugasProject): Promise<Blob> {
+    const formData = mapSuratTugasProjectToFormData(item);
+    const documentNumber = extractDocumentNumber(item);
+    const verificationUrl = `${window.location.origin}/surat-tugas/${item.id}`;
+
+    let qrVerificationInput = verificationUrl;
+    try {
+        qrVerificationInput = await saveQRCodeImage(verificationUrl, item.id);
+    } catch (qrError) {
+        console.warn('QR regeneration failed, falling back to URL-based QR:', qrError);
+    }
+
+    return generateSuratTugasFromForm(formData, formData.tanggal_surat!, {
+        documentNumber,
+        autoDownload: true,
+        verificationUrl: qrVerificationInput,
+        filename: sanitizeFilename(item.masterDocumentList.documentNumber),
+    });
 }
 

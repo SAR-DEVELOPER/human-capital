@@ -220,10 +220,10 @@ export default function ClientBrowser({
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (client) =>
-          client.name.toLowerCase().includes(query) ||
-          client.contact_name.toLowerCase().includes(query) ||
-          client.contact_email.toLowerCase().includes(query) ||
-          (client.group && client.group.toLowerCase().includes(query))
+          client.name?.toLowerCase().includes(query) ||
+          client.contact_name?.toLowerCase().includes(query) ||
+          client.contact_email?.toLowerCase().includes(query) ||
+          client.group?.toLowerCase().includes(query)
       );
     }
 

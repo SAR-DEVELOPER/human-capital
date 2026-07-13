@@ -24,10 +24,10 @@ export interface Client {
   id: number;
   name: string;
   group: string | null;
-  contact_name: string;
-  contact_position: string;
-  contact_email: string;
-  contact_phone: string;
+  contact_name: string | null;
+  contact_position: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
   referral_from: string;
   date_of_first_project: string;
   status: string;

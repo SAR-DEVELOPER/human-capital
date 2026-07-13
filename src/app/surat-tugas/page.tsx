@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { generateSuratTugasFromForm, saveQRCodeImage } from "../../../lib/utils/docxGenerator";
+import { generateSuratTugasFromForm, regenerateAndDownloadSuratTugas, saveQRCodeImage } from "../../../lib/utils/docxGenerator";
 import type { TeamMember, SuratTugasFormData, SuratTugasProject, SuratTugasDBData } from "../../../lib/types/suratTugas";
 import { SuratTugasService } from "../../../lib/api/services/suratTugas";
 import UserInfoSidebar from "../../components/ui/UserInfoSidebar";
@@ -63,7 +63,6 @@ import {
     FilterList as FilterIcon,
     Edit as EditIcon,
     Delete as DeleteIcon,
-    Visibility as ViewIcon,
     FlightTakeoff as TravelIcon,
     Work as ProjectIcon,
     CalendarToday as CalendarIcon,
@@ -116,6 +115,7 @@ function SuratTugasPageContent() {
     const [jenisFilter, setJenisFilter] = useState<string>("all");
     const [selectedSuratTugas, setSelectedSuratTugas] = useState<SuratTugasProject | null>(null);
     const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+    const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
     // Create form state
     const [activeStep, setActiveStep] = useState(0);
@@ -305,6 +305,22 @@ function SuratTugasPageContent() {
 
         return matchesSearch && matchesStatus && matchesJenis;
     });
+
+    const handleRedownload = async (item: SuratTugasProject) => {
+        setDownloadingId(item.id);
+        try {
+            await regenerateAndDownloadSuratTugas(item);
+        } catch (error) {
+            console.error('Error re-downloading surat tugas:', error);
+            alert(
+                error instanceof Error
+                    ? `Gagal mengunduh ulang surat tugas: ${error.message}`
+                    : 'Gagal mengunduh ulang surat tugas. Silakan coba lagi.',
+            );
+        } finally {
+            setDownloadingId(null);
+        }
+    };
 
     // Get status color
     const getStatusColor = (status: string) => {
@@ -970,10 +986,16 @@ function SuratTugasPageContent() {
                                             </TableCell>
                                             <TableCell>
                                                 <Box sx={{ display: "flex", gap: 0.5 }}>
-                                                    <Tooltip title="View/Edit/Print features coming soon">
-                                                        <IconButton size="small" disabled>
-                                                            <ViewIcon fontSize="small" />
-                                                        </IconButton>
+                                                    <Tooltip title="Unduh ulang Surat Tugas">
+                                                        <span>
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => handleRedownload(item)}
+                                                                disabled={downloadingId === item.id}
+                                                            >
+                                                                <DownloadIcon fontSize="small" />
+                                                            </IconButton>
+                                                        </span>
                                                     </Tooltip>
                                                 </Box>
                                             </TableCell>
